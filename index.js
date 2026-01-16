@@ -3,6 +3,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { loadCommands } from './utils/commandHandler.js';
 import { deployCommands } from './utils/deployCommands.js';
+import { connectDB } from './utils/database.js';
+import { watchWaitlist } from './utils/waitlistWatcher.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -66,6 +68,15 @@ client.commands = new Collection();
 
 // Load commands dynamically
 await loadCommands(client);
+
+// Connect to MongoDB
+if (process.env.MONGODB_URI) {
+    try {
+        await connectDB();
+    } catch (error) {
+        console.error('⚠️  MongoDB connection failed, continuing without database features');
+    }
+}
 
 // Handle command interactions
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -165,7 +176,7 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 // When the client is ready, run this code (only once)
-client.once(Events.ClientReady, (c) => {
+client.once(Events.ClientReady, async (c) => {
     console.log(`✅ Ready! Logged in as ${c.user.tag}`);
     console.log(`📊 Serving ${client.guilds.cache.size} guild(s)`);
     console.log(`🤖 Loaded ${client.commands.size} command(s)`);
@@ -174,6 +185,15 @@ client.once(Events.ClientReady, (c) => {
         console.log(`🔗 GitHub PR linking enabled for: ${process.env.GITHUB_REPO}`);
     } else {
         console.log(`⚠️  GitHub PR linking disabled (set GITHUB_REPO in .env to enable)`);
+    }
+
+    // Start watching waitlist if MongoDB is connected
+    if (process.env.MONGODB_URI) {
+        try {
+            await watchWaitlist(client);
+        } catch (error) {
+            console.error('⚠️  Failed to start waitlist watcher:', error.message);
+        }
     }
 });
 
