@@ -106,6 +106,35 @@ After creating a new command, just restart the bot with `npm start` - commands w
 - `/ping` - Check bot latency and API response time
 - `/server` - Display server information and statistics
 - `/user [target]` - Show user information (defaults to command user)
+- `/pr number:123` - Get a link to a GitHub pull request
+
+### 🛡️ Moderation Commands (Founder Only)
+- `/purge amount:50` - Delete messages (1-100)
+- `/ban target:@user reason:...` - Ban a user
+- `/kick target:@user reason:...` - Kick a user
+- `/timeout target:@user duration:60` - Timeout a user (minutes)
+- `/unban user_id:123456` - Unban a user
+- `/untimeout target:@user` - Remove timeout from a user
+
+## 🚀 Deployment
+
+### Local Development
+```bash
+npm start
+```
+
+### Production Hosting
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for full deployment instructions.
+
+**Quick Deploy to Render (FREE):**
+1. Push to GitHub
+2. Create new Web Service on Render
+3. Connect your repo
+4. Add environment variables
+5. Deploy!
+
+The bot includes a built-in HTTP server so it works on Render's free tier.
 
 ## 🛠️ Scripts
 

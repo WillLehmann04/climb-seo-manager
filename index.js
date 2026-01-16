@@ -1,4 +1,5 @@
 import { Client, GatewayIntentBits, Collection, Events } from 'discord.js';
+import express from 'express';
 import dotenv from 'dotenv';
 import { loadCommands } from './utils/commandHandler.js';
 import { deployCommands } from './utils/deployCommands.js';
@@ -10,6 +11,28 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Create Express app for Render health checks
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.json({
+        status: 'online',
+        bot: client.user ? client.user.tag : 'Starting...',
+        guilds: client.guilds ? client.guilds.cache.size : 0,
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'healthy', uptime: process.uptime() });
+});
+
+app.listen(PORT, () => {
+    console.log(`🌐 HTTP server listening on port ${PORT}`);
+});
 
 // Validate required environment variables
 if (!process.env.DISCORD_TOKEN || !process.env.CLIENT_ID || !process.env.GUILD_ID) {
