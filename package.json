@@ -1,0 +1,31 @@
+{
+  "name": "climb-seo-manager",
+  "version": "1.0.0",
+  "description": "ClimbSEO Discord Server Management Bot",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "deploy": "node deploy-commands.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WillLehmann04/climb-seo-manager.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "discord.js"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WillLehmann04/climb-seo-manager/issues"
+  },
+  "homepage": "https://github.com/WillLehmann04/climb-seo-manager#readme",
+  "dependencies": {
+    "discord.js": "^14.25.1",
+    "dotenv": "^16.4.5"
+  }
+}
