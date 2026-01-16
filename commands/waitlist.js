@@ -8,14 +8,16 @@ export default {
     
     async execute(interaction) {
         try {
-            await interaction.deferReply();
-
-            // Check if MongoDB is connected
+            // Check if MongoDB is connected first
             if (!Waitlist.db || Waitlist.db.readyState !== 1) {
-                return await interaction.editReply({
-                    content: '❌ MongoDB is not connected. Waitlist stats are unavailable.'
+                return await interaction.reply({
+                    content: '❌ MongoDB is not connected. Waitlist stats are unavailable.',
+                    ephemeral: true
                 });
             }
+
+            // Now defer the reply
+            await interaction.deferReply();
 
             // Get total count
             const totalCount = await Waitlist.countDocuments();
@@ -128,9 +130,18 @@ export default {
 
         } catch (error) {
             console.error('Error fetching waitlist stats:', error);
-            await interaction.editReply({
-                content: '❌ Failed to fetch waitlist statistics. Error: ' + error.message
-            });
+            
+            // Check if we can still reply
+            if (interaction.deferred) {
+                await interaction.editReply({
+                    content: '❌ Failed to fetch waitlist statistics. Error: ' + error.message
+                }).catch(() => {});
+            } else if (!interaction.replied) {
+                await interaction.reply({
+                    content: '❌ Failed to fetch waitlist statistics. Error: ' + error.message,
+                    ephemeral: true
+                }).catch(() => {});
+            }
         }
     },
 };
