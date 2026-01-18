@@ -9,7 +9,7 @@ export default {
         const { guild } = interaction;
         
         const embed = {
-            color: 0x5865F2,
+            color: 0x2AA58C,
             title: `📊 ${guild.name} Server Info`,
             thumbnail: {
                 url: guild.iconURL(),

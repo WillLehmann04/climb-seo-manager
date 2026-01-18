@@ -55,7 +55,7 @@ export default {
 
             // Build embed
             const embed = {
-                color: 0x5865F2,
+                color: 0x2AA58C,
                 title: '📊 Waitlist Statistics',
                 fields: [
                     {

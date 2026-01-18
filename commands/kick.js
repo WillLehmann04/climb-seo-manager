@@ -67,7 +67,7 @@ export default {
             await member.kick(`${reason} | Kicked by ${interaction.user.tag}`);
 
             const embed = {
-                color: 0xFFA500,
+                color: 0x2AA58C,
                 title: '👢 User Kicked',
                 fields: [
                     {

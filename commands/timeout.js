@@ -86,7 +86,7 @@ export default {
             if (minutes > 0) durationText += `${minutes}m`;
 
             const embed = {
-                color: 0xFFFF00,
+                color: 0x2AA58C,
                 title: '⏰ User Timed Out',
                 fields: [
                     {

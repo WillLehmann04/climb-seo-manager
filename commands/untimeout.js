@@ -51,7 +51,7 @@ export default {
             await member.timeout(null, `${reason} | Timeout removed by ${interaction.user.tag}`);
 
             const embed = {
-                color: 0x00FF00,
+                color: 0x2AA58C,
                 title: '✅ Timeout Removed',
                 fields: [
                     {

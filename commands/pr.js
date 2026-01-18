@@ -25,7 +25,7 @@ export default {
         const prUrl = `${repoUrl}/pull/${prNumber}`;
 
         const embed = {
-            color: 0x6e5494,
+            color: 0x2AA58C,
             title: `🔗 Pull Request #${prNumber}`,
             description: `[View PR #${prNumber} on GitHub](${prUrl})`,
             fields: [

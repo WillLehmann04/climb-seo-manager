@@ -32,7 +32,7 @@ export async function watchWaitlist(client) {
 
             // Create a beautiful embed with the waitlist entry info
             const embed = {
-                color: 0x00FF00, // Green for new entry
+                color: 0x2AA58C,
                 title: '🎉 New Waitlist Entry!',
                 fields: [],
                 footer: {

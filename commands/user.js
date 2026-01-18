@@ -16,7 +16,7 @@ export default {
         const member = await interaction.guild.members.fetch(targetUser.id);
         
         const embed = {
-            color: targetUser.accentColor || 0x5865F2,
+            color: 0x2AA58C,
             title: `👤 User Info: ${targetUser.tag}`,
             thumbnail: {
                 url: targetUser.displayAvatarURL({ dynamic: true, size: 256 }),

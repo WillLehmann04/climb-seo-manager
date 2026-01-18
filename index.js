@@ -139,7 +139,7 @@ client.on(Events.MessageCreate, async (message) => {
     const repoUrl = `https://github.com/${process.env.GITHUB_REPO}`;
     const embeds = Array.from(prNumbers).map(num => {
         return {
-            color: 0x6e5494, // GitHub purple
+            color: 0x2AA58C,
             title: `🔗 Pull Request #${num}`,
             url: `${repoUrl}/pull/${num}`,
             description: `[Click here to view PR #${num}](${repoUrl}/pull/${num})`,

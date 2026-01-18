@@ -72,7 +72,7 @@ export default {
             });
 
             const embed = {
-                color: 0xFF0000,
+                color: 0x2AA58C,
                 title: '🔨 User Banned',
                 fields: [
                     {
