@@ -54,3 +54,4 @@ export async function deployCommands(token, clientId, guildId) {
     }
 }
 
+

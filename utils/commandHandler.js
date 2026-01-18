@@ -36,3 +36,4 @@ export async function loadCommands(client) {
     console.log(`✅ Successfully loaded ${client.commands.size} command(s)\n`);
 }
 
+
