@@ -11,6 +11,12 @@ import { dirname } from 'path';
 // Load environment variables
 dotenv.config();
 
+console.log('📋 Environment Check:');
+console.log(`  DISCORD_TOKEN: ${process.env.DISCORD_TOKEN ? `✅ (${process.env.DISCORD_TOKEN.length} chars)` : '❌ MISSING'}`);
+console.log(`  CLIENT_ID: ${process.env.CLIENT_ID ? `✅ ${process.env.CLIENT_ID}` : '❌ MISSING'}`);
+console.log(`  GUILD_ID: ${process.env.GUILD_ID ? `✅ ${process.env.GUILD_ID}` : '❌ MISSING'}`);
+console.log(`  MONGODB_URI: ${process.env.MONGODB_URI ? '✅ SET' : '⚠️  Not set'}`);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -41,8 +47,8 @@ app.listen(PORT, () => {
 
 // Validate required environment variables
 if (!process.env.DISCORD_TOKEN || !process.env.CLIENT_ID || !process.env.GUILD_ID) {
-    console.error('❌ Missing required environment variables!');
-    console.error('Please ensure DISCORD_TOKEN, CLIENT_ID, and GUILD_ID are set in your .env file');
+    console.error('\n❌ Missing required environment variables!');
+    console.error('Please ensure DISCORD_TOKEN, CLIENT_ID, and GUILD_ID are set in your Render environment');
     process.exit(1);
 }
 
