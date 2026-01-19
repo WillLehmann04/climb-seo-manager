@@ -226,31 +226,52 @@ process.on('unhandledRejection', (error) => {
     console.error('❌ Unhandled promise rejection:', error);
 });
 
-// Login to Discord
+// Login to Discord with retry logic
 console.log('🤖 Starting Discord client login...');
 let loginResolved = false;
+let retryCount = 0;
+const maxRetries = Infinity; // Unlimited retries
+let retryDelay = 5000; // Start with 5 seconds
 
-client.login(process.env.DISCORD_TOKEN)
-    .then(() => {
+async function loginWithRetry() {
+    try {
+        retryCount++;
+        console.log(`🔄 Login attempt ${retryCount}...`);
+        
+        await client.login(process.env.DISCORD_TOKEN);
         loginResolved = true;
         console.log('🔑 Login request accepted by Discord. Waiting for ready event...');
-    })
-    .catch((error) => {
-        console.error('❌ Discord login failed:', error.message || error);
-        process.exit(1);
-    });
+    } catch (error) {
+        console.error(`❌ Login attempt ${retryCount} failed:`, error.message || error);
+        
+        if (retryCount < maxRetries) {
+            console.log(`⏳ Retrying in ${retryDelay / 1000}s...`);
+            setTimeout(() => {
+                retryDelay = Math.min(retryDelay * 1.5, 60000); // Exponential backoff, max 60s
+                loginWithRetry();
+            }, retryDelay);
+        } else {
+            console.error('❌ Max retries reached. Exiting.');
+            process.exit(1);
+        }
+    }
+}
+
+loginWithRetry();
 
 // Check login progress
 setTimeout(() => {
     if (!loginResolved) {
-        console.warn('⚠️  Login promise not resolved after 15s. Discord API may be slow or unreachable.');
+        console.warn('⚠️  Login promise not resolved after 15s. Retrying in background...');
+        console.warn('    This could be: Invalid token, network issue, or rate limiting (429)');
     }
 }, 15000);
 
 setTimeout(() => {
     if (!client.isReady()) {
-        console.warn('⚠️  Discord client not ready after 60s. Connection may have stalled.');
+        console.warn(`⚠️  Discord client not ready after 60s (attempt ${retryCount}). Still connecting...`);
         console.log(`    Client state: isReady=${client.isReady()}, guilds=${client.guilds.cache.size}`);
+        console.warn('    If you see 429 errors above, run: kill 1');
     }
 }, 60000);
 
