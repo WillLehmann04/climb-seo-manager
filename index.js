@@ -55,6 +55,11 @@ client = new Client({
     ],
 });
 
+// Add debug listeners to catch rate limiting (429 errors)
+client
+    .on("debug", console.log)
+    .on("warn", console.log);
+
 // Create a collection to store commands
 client.commands = new Collection();
 
