@@ -22,7 +22,7 @@ const __dirname = dirname(__filename);
 
 let client;
 
-// Create Express app for Render health checks
+// Create Express app for Render health checks (start in background, don't block bot)
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -40,8 +40,13 @@ app.get('/health', (req, res) => {
     res.json({ status: 'healthy', uptime: process.uptime() });
 });
 
-app.listen(PORT, () => {
-    console.log(`🌐 HTTP server listening on port ${PORT}`);
+// Start Express server in background (non-blocking)
+setImmediate(() => {
+    app.listen(PORT, () => {
+        console.log(`🌐 HTTP server listening on port ${PORT}`);
+    }).on('error', (err) => {
+        console.error(`❌ Express server error: ${err.message}`);
+    });
 });
 
 
@@ -249,6 +254,7 @@ async function loginWithRetry() {
         console.log('🔑 Login request accepted by Discord. Waiting for ready event...');
     } catch (error) {
         console.error(`❌ Login attempt ${retryCount} failed:`, error.message || error);
+        console.error(`   Error code: ${error.code}`);
         
         if (retryCount < maxRetries) {
             console.log(`⏳ Retrying in ${retryDelay / 1000}s...`);
@@ -263,6 +269,7 @@ async function loginWithRetry() {
     }
 }
 
+// Start login immediately (don't wait for Express)
 loginWithRetry();
 
 // Check login progress

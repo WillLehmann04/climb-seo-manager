@@ -30,6 +30,16 @@ export async function watchWaitlist(client) {
                 return;
             }
 
+            // Update channel name with waitlist count
+            try {
+                const waitlistCount = await Waitlist.countDocuments();
+                const newChannelName = `${waitlistCount} users - waitlisted`;
+                await channel.setName(newChannelName);
+                console.log(`📝 Updated channel name to: ${newChannelName}`);
+            } catch (error) {
+                console.error('❌ Error updating channel name:', error);
+            }
+
             // Create a beautiful embed with the waitlist entry info
             const embed = {
                 color: 0x2AA58C,
