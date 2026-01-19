@@ -46,15 +46,6 @@ if (!process.env.DISCORD_TOKEN || !process.env.CLIENT_ID || !process.env.GUILD_I
     process.exit(1);
 }
 
-// Auto-deploy commands to Discord (fire and forget - don't block bot login)
-deployCommands(
-    process.env.DISCORD_TOKEN,
-    process.env.CLIENT_ID,
-    process.env.GUILD_ID
-).catch((error) => {
-    console.warn('⚠️  Failed to deploy commands. Bot will still start, but commands may not work.');
-});
-
 // Create a new client instance
 client = new Client({
     intents: [
@@ -182,6 +173,17 @@ client.once(Events.ClientReady, async (c) => {
     console.log(`📊 Serving ${client.guilds.cache.size} guild(s)`);
     console.log(`🤖 Loaded ${client.commands.size} command(s)`);
     
+    // Deploy commands after client is ready (fixes Render timeout issues)
+    try {
+        await deployCommands(
+            process.env.DISCORD_TOKEN,
+            process.env.CLIENT_ID,
+            process.env.GUILD_ID
+        );
+    } catch (error) {
+        console.warn('⚠️  Failed to deploy commands:', error.message);
+    }
+    
     if (process.env.GITHUB_REPO) {
         console.log(`🔗 GitHub PR linking enabled for: ${process.env.GITHUB_REPO}`);
     } else {
@@ -221,18 +223,29 @@ process.on('unhandledRejection', (error) => {
 
 // Login to Discord
 console.log('🤖 Starting Discord client login...');
+let loginResolved = false;
+
 client.login(process.env.DISCORD_TOKEN)
     .then(() => {
+        loginResolved = true;
         console.log('🔑 Login request accepted by Discord. Waiting for ready event...');
     })
     .catch((error) => {
-        console.error('❌ Discord login failed:', error);
+        console.error('❌ Discord login failed:', error.message || error);
         process.exit(1);
     });
 
+// Check login progress
+setTimeout(() => {
+    if (!loginResolved) {
+        console.warn('⚠️  Login promise not resolved after 15s. Discord API may be slow or unreachable.');
+    }
+}, 15000);
+
 setTimeout(() => {
     if (!client.isReady()) {
-        console.warn('⚠️  Discord client not ready after 30s. Check token, intents, and network access.');
+        console.warn('⚠️  Discord client not ready after 60s. Connection may have stalled.');
+        console.log(`    Client state: isReady=${client.isReady()}, guilds=${client.guilds.cache.size}`);
     }
-}, 30000);
+}, 60000);
 
