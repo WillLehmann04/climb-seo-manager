@@ -205,10 +205,36 @@ client.on(Events.Error, (error) => {
     console.error('❌ Discord client error:', error);
 });
 
+client.on('shardError', (error) => {
+    console.error('❌ Discord shard error:', error);
+});
+
+client.on('shardDisconnect', (event, shardId) => {
+    console.warn(`⚠️  Shard ${shardId} disconnected:`, event);
+});
+
+client.on('shardReconnecting', (shardId) => {
+    console.warn(`🔄 Shard ${shardId} reconnecting...`);
+});
+
 process.on('unhandledRejection', (error) => {
     console.error('❌ Unhandled promise rejection:', error);
 });
 
 // Login to Discord
-client.login(process.env.DISCORD_TOKEN);
+console.log('🤖 Starting Discord client login...');
+client.login(process.env.DISCORD_TOKEN)
+    .then(() => {
+        console.log('🔑 Login request accepted by Discord. Waiting for ready event...');
+    })
+    .catch((error) => {
+        console.error('❌ Discord login failed:', error);
+        process.exit(1);
+    });
+
+setTimeout(() => {
+    if (!client.isReady()) {
+        console.warn('⚠️  Discord client not ready after 30s. Check token, intents, and network access.');
+    }
+}, 30000);
 
