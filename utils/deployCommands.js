@@ -39,17 +39,23 @@ export async function deployCommands(token, clientId, guildId) {
     try {
         console.log(`\n🚀 Syncing ${commands.length} slash command(s) with Discord...`);
 
-        // The put method is used to fully refresh all commands
-        const data = await rest.put(
+        // Add timeout to prevent hanging
+        const deployPromise = rest.put(
             Routes.applicationGuildCommands(clientId, guildId),
             { body: commands },
         );
+
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Command deployment timeout (30s)')), 30000)
+        );
+
+        const data = await Promise.race([deployPromise, timeoutPromise]);
 
         console.log(`✅ Successfully synced ${data.length} command(s) to guild ${guildId}\n`);
         
         return data;
     } catch (error) {
-        console.error('❌ Error deploying commands:', error);
+        console.error('❌ Error deploying commands:', error.message || error);
         throw error;
     }
 }

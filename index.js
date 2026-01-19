@@ -46,16 +46,14 @@ if (!process.env.DISCORD_TOKEN || !process.env.CLIENT_ID || !process.env.GUILD_I
     process.exit(1);
 }
 
-// Auto-deploy commands to Discord
-try {
-    await deployCommands(
-        process.env.DISCORD_TOKEN,
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-    );
-} catch (error) {
-    console.error('❌ Failed to deploy commands. Bot will still start, but commands may not work.');
-}
+// Auto-deploy commands to Discord (fire and forget - don't block bot login)
+deployCommands(
+    process.env.DISCORD_TOKEN,
+    process.env.CLIENT_ID,
+    process.env.GUILD_ID
+).catch((error) => {
+    console.warn('⚠️  Failed to deploy commands. Bot will still start, but commands may not work.');
+});
 
 // Create a new client instance
 client = new Client({
