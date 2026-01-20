@@ -1,6 +1,7 @@
 import { Waitlist } from '../models/Waitlist.js';
 
 const WAITLIST_CHANNEL_ID = '1461852210412654756';
+const recentIds = new Set(); // Track recently processed IDs to prevent duplicates
 
 /**
  * Set up MongoDB Change Stream to watch for new waitlist entries
@@ -15,6 +16,17 @@ export async function watchWaitlist(client) {
         ]);
 
         changeStream.on('change', async (change) => {
+            const entryId = change.fullDocument._id.toString();
+            
+            // Skip if we've already processed this ID recently (debounce)
+            if (recentIds.has(entryId)) {
+                console.log('⏭️  Skipping duplicate change event for ID:', entryId);
+                return;
+            }
+            
+            recentIds.add(entryId);
+            // Remove ID from tracking after 5 seconds
+            setTimeout(() => recentIds.delete(entryId), 5000);
             console.log('🆕 New waitlist entry detected!');
             
             const newEntry = change.fullDocument;
