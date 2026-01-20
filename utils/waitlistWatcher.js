@@ -2,6 +2,7 @@ import { Waitlist } from '../models/Waitlist.js';
 
 const WAITLIST_CHANNEL_ID = '1461852210412654756';
 const recentIds = new Set(); // Track recently processed IDs to prevent duplicates
+let changeStreamActive = false; // Prevent multiple change streams
 
 /**
  * Set up MongoDB Change Stream to watch for new waitlist entries
@@ -9,6 +10,13 @@ const recentIds = new Set(); // Track recently processed IDs to prevent duplicat
  */
 export async function watchWaitlist(client) {
     try {
+        // Prevent multiple change streams from being created
+        if (changeStreamActive) {
+            console.log('⚠️  Waitlist change stream already active, skipping...');
+            return;
+        }
+        
+        changeStreamActive = true;
         console.log('👀 Setting up waitlist change stream...');
 
         const changeStream = Waitlist.watch([
@@ -146,8 +154,9 @@ export async function watchWaitlist(client) {
             }
 
             try {
-                await channel.send({ embeds: [embed] });
-                console.log('✅ Waitlist notification sent!');
+                console.log('📤 Sending message to channel...');
+                const sentMessage = await channel.send({ embeds: [embed] });
+                console.log('✅ Waitlist notification sent!', sentMessage.id);
             } catch (error) {
                 console.error('❌ Error sending waitlist notification:', error);
             }
