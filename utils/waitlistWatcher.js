@@ -153,10 +153,15 @@ export async function watchWaitlist(client) {
                 embed.description = '✨ A new user has joined the waitlist!';
             }
 
+            console.log('📋 Embed details:', {
+                embeds: [embed],
+                fieldsCount: embed.fields.length
+            });
+
             try {
-                console.log('📤 Sending message to channel...');
+                console.log('📤 About to send message to channel...');
                 const sentMessage = await channel.send({ embeds: [embed] });
-                console.log('✅ Waitlist notification sent!', sentMessage.id);
+                console.log('✅ Waitlist notification sent!', 'MessageID:', sentMessage.id);
             } catch (error) {
                 console.error('❌ Error sending waitlist notification:', error);
             }
